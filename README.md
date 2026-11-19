@@ -6,6 +6,16 @@ Ilum is a macOS menu bar app for finding what takes up space, reviewing cleanup 
 
 **macOS 13.3 or later · Apple Silicon and Intel.** [Download Ilum.dmg](https://github.com/DFT-IT/ilum/releases/latest/download/Ilum.dmg) from GitHub Releases. The build is ad-hoc signed. macOS may block it on first launch because the build has no Apple notarization. [Release setup and updates](RELEASE.md)
 
+[![Ilum system overview in dark mode with cleanup recommendations and storage insights](docs/screenshots/system-overview.jpg)](docs/screenshots/system-overview.jpg)
+
+## One view, two looks
+
+Switch between **DE / EN** or change appearance directly in the toolbar. Both screenshots show the same 24-hour storage comparison with sample data.
+
+| Dark mode · English | Light mode · Deutsch |
+| :---: | :---: |
+| [![What grew? Storage history in English with dark appearance](docs/screenshots/storage-history-dark-en.jpg)](docs/screenshots/storage-history-dark-en.jpg) | [![Was ist gewachsen? Speicherverlauf auf Deutsch im hellen Modus](docs/screenshots/storage-history-light-de.jpg)](docs/screenshots/storage-history-light-de.jpg) |
+
 ## Features
 
 - **Storage history** compares measurements and shows where usage grew.
