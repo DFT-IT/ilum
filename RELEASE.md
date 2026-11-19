@@ -1,17 +1,15 @@
 # Ilum veröffentlichen
 
-Ilum wird als `Ilum.dmg` für Apple Silicon und Intel über **GitHub Releases** angeboten. [dft-it.com](https://dft-it.com/) kann auf `https://github.com/OWNER/REPO/releases/latest/download/Ilum.dmg` verlinken. Eine Einreichung im Mac App Store ist dafür nicht nötig.
+Ilum wird als `Ilum.dmg` für Apple Silicon und Intel über **GitHub Releases** angeboten. [dft-it.com](https://dft-it.com/) kann auf den [aktuellen Download](https://github.com/DFT-IT/ilum/releases/latest/download/Ilum.dmg) verlinken. Die App ist ad hoc signiert. macOS kann sie beim ersten Start blockieren, weil sie keine Apple-Notarisierung hat. In-App-Updates werden separat signiert. [Apple zum Öffnen heruntergeladener Apps](https://support.apple.com/de-de/102445)
 
 ## Einmal einrichten
 
 1. Öffentliches GitHub-Repository einrichten und die [MIT-Lizenz für den Quellcode](LICENSE) mitführen. Rechte an Name und Branding klären.
-2. GitHub-Umgebung `release` anlegen. Für Signierung und Notarisierung ein **Developer ID Application**-Zertifikat und einen Apple-API-Schlüssel einrichten. Der Schlüssel aus App Store Connect dient der Notarisierung. [Anleitung zur macOS-Signierung](https://v2.tauri.app/distribute/sign/macos/)
-3. Mit `npm run tauri signer generate` ein separates Schlüsselpaar für Updates erzeugen. Private Schlüssel gehören in GitHub Secrets.
+2. GitHub-Umgebung `release` anlegen. Mit `npm run tauri signer generate` das Schlüsselpaar für Updates erzeugen und dauerhaft sichern. Bei späteren Builds dasselbe Schlüsselpaar verwenden.
 
 | GitHub | Werte |
 | --- | --- |
-| Variables | `APPLE_SIGNING_IDENTITY` (Zertifikatsname), `TAURI_UPDATE_PUBLIC_KEY` (Inhalt der `.pub`-Datei) |
-| Secrets für Apple | `APPLE_CERTIFICATE` (Base64-kodierte `.p12`), `APPLE_CERTIFICATE_PASSWORD`, `APPLE_API_KEY` (Key-ID), `APPLE_API_ISSUER` (Issuer-ID), `APPLE_API_KEY_CONTENT` (Inhalt der `.p8`) |
+| Variables | `TAURI_UPDATE_PUBLIC_KEY` (Inhalt der `.pub`-Datei) |
 | Secrets für Updates | `TAURI_SIGNING_PRIVATE_KEY` (Inhalt der privaten Schlüsseldatei), `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (falls gesetzt) |
 
 ## Pro Version

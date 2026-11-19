@@ -4,7 +4,7 @@ Ilum is a macOS menu bar app for finding what takes up space, reviewing cleanup 
 
 ## Download
 
-**macOS 13.3 or later · Apple Silicon and Intel.** The public DMG is pending. Published builds will be available through GitHub Releases and the [DFT IT website](https://dft-it.com/). [Release setup and updates](RELEASE.md)
+**macOS 13.3 or later · Apple Silicon and Intel.** [Download Ilum.dmg](https://github.com/DFT-IT/ilum/releases/latest/download/Ilum.dmg) from GitHub Releases. The build is ad-hoc signed. macOS may block it on first launch because the build has no Apple notarization. [Release setup and updates](RELEASE.md)
 
 ## Features
 
