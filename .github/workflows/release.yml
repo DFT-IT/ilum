@@ -49,7 +49,7 @@ jobs:
           npm run tauri build -- --target universal-apple-darwin --bundles app,dmg \
             --config "$RUNNER_TEMP/release-config.json"
           bundle=src-tauri/target/universal-apple-darwin/release/bundle
-          lipo -verify_arch arm64 x86_64 "$bundle/macos/Ilum.app/Contents/MacOS/ilum"
+          lipo "$bundle/macos/Ilum.app/Contents/MacOS/ilum" -verify_arch arm64 x86_64
           codesign --verify --deep --strict "$bundle/macos/Ilum.app"
           dmg="$(find "$bundle/dmg" -maxdepth 1 -name '*.dmg' -print -quit)"
           test -f "$dmg"
