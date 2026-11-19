@@ -77,6 +77,18 @@ jobs:
           JS
           cd "$RUNNER_TEMP/release"
           shasum -a 256 Ilum.dmg > Ilum.dmg.sha256
+          release_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME"
+          cat > release-notes.md <<EOF
+          ## Download Ilum for macOS
+
+          **[Download Ilum.dmg]($release_url/Ilum.dmg)**
+
+          Requires macOS 13.3 or later on Apple Silicon or Intel. Open the DMG and drag Ilum into Applications.
+
+          Already using Ilum? Open **Settings → Software Update**.
+
+          The DMG is ad-hoc signed. macOS may block the first launch because the app has no Apple notarization. In-app updates are signed separately. [SHA-256 checksum]($release_url/Ilum.dmg.sha256)
+          EOF
           gh release create "$GITHUB_REF_NAME" Ilum.dmg Ilum.dmg.sha256 Ilum.app.tar.gz Ilum.app.tar.gz.sig latest.json \
             --repo "$GITHUB_REPOSITORY" --draft --verify-tag --generate-notes --title "Ilum $GITHUB_REF_NAME" \
-            --notes "**Download:** Ilum.dmg supports Apple Silicon and Intel on macOS 13.3 or later. This build is ad-hoc signed and has no Apple notarization. macOS may block it on first launch. In-app updates are signed separately."
+            --notes-file release-notes.md

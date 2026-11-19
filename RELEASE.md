@@ -15,5 +15,5 @@ Ilum wird als `Ilum.dmg` für Apple Silicon und Intel über **GitHub Releases** 
 ## Pro Version
 
 1. Version in `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` und `package.json` erhöhen, Lockfiles aktualisieren und den passenden Tag `vX.Y.Z` pushen.
-2. Den vom [Workflow](.github/workflows/release.yml) erzeugten Release-Entwurf prüfen und als stabiles GitHub-Release veröffentlichen. Er enthält DMG, Prüfsumme und signierte Update-Dateien.
+2. Den vom [Workflow](.github/workflows/release.yml) erzeugten Release-Entwurf prüfen. Unter **What's new** kurz beschreiben, was sich in dieser Version geändert hat. Danach als stabiles GitHub-Release veröffentlichen. Der Entwurf enthält DMG, Prüfsumme und signierte Update-Dateien.
 3. Mit der vorherigen Version aus demselben Update-Kanal **Einstellungen → Softwareupdate** testen. Lokale Builds ohne Update-Kanal brauchen einmalig die öffentliche DMG.
