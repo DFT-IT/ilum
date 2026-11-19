@@ -1,0 +1,3 @@
+"NSDesktopFolderUsageDescription" = "Ilum measures storage used on your Desktop and shows large files for review.";
+"NSDocumentsFolderUsageDescription" = "Ilum measures storage used by Documents and shows large files for review.";
+"NSDownloadsFolderUsageDescription" = "Ilum measures storage used by Downloads and shows large or old downloads for review.";

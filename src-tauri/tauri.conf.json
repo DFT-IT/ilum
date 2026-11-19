@@ -1,0 +1,40 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Ilum",
+  "version": "0.1.2",
+  "identifier": "com.dft-it.ilum",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": false,
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'"
+    },
+    "windows": [
+      {
+        "label": "main", "title": "Ilum", "width": 1216, "height": 870,
+        "minWidth": 760, "minHeight": 640, "center": true, "visible": false,
+        "titleBarStyle": "Overlay", "hiddenTitle": true, "trafficLightPosition": { "x": 15, "y": 19 }
+      },
+      {
+        "label": "popover", "title": "Ilum", "url": "index.html?surface=menu",
+        "width": 356, "height": 406, "visible": false, "decorations": false,
+        "resizable": false, "alwaysOnTop": true, "skipTaskbar": true, "visibleOnAllWorkspaces": true
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app"],
+    "resources": {
+      "locales/en.lproj/InfoPlist.strings": "en.lproj/InfoPlist.strings",
+      "locales/de.lproj/InfoPlist.strings": "de.lproj/InfoPlist.strings"
+    },
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns"],
+    "macOS": { "minimumSystemVersion": "13.3", "signingIdentity": "-" }
+  }
+}

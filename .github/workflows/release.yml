@@ -1,0 +1,101 @@
+name: macOS release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: |
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+          npm ci
+          cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Configure the public update channel
+        env:
+          TAURI_UPDATE_PUBLIC_KEY: ${{ vars.TAURI_UPDATE_PUBLIC_KEY }}
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from "node:fs";
+          const version = JSON.parse(readFileSync("src-tauri/tauri.conf.json", "utf8")).version;
+          if (process.env.GITHUB_REF_NAME !== `v${version}`) throw new Error("Tag must match the app version");
+          const pubkey = process.env.TAURI_UPDATE_PUBLIC_KEY?.trim();
+          if (!pubkey) throw new Error("Missing TAURI_UPDATE_PUBLIC_KEY");
+          const endpoint = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/releases/latest/download/latest.json`;
+          if (!endpoint.startsWith("https://")) throw new Error("The public update feed requires HTTPS");
+          writeFileSync(process.env.RUNNER_TEMP + "/release-config.json", JSON.stringify({
+            bundle: { createUpdaterArtifacts: true },
+            plugins: { updater: { pubkey, endpoints: [endpoint] } }
+          }));
+          JS
+      - name: Sign, notarize, and build the universal DMG
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ vars.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${APPLE_CERTIFICATE:?}" "${APPLE_CERTIFICATE_PASSWORD:?}" "${APPLE_SIGNING_IDENTITY:?}"
+          : "${APPLE_API_ISSUER:?}" "${APPLE_API_KEY:?}" "${APPLE_API_KEY_CONTENT:?}" "${TAURI_SIGNING_PRIVATE_KEY:?}"
+          case "$APPLE_SIGNING_IDENTITY" in
+            "Developer ID Application:"*) ;;
+            *) echo "Expected a Developer ID Application identity" >&2; exit 1 ;;
+          esac
+          umask 077
+          export APPLE_API_KEY_PATH="$RUNNER_TEMP/apple-notary.p8"
+          printf '%s' "$APPLE_API_KEY_CONTENT" > "$APPLE_API_KEY_PATH"
+          npm run tauri build -- --target universal-apple-darwin --bundles app,dmg \
+            --config "$RUNNER_TEMP/release-config.json"
+          bundle=src-tauri/target/universal-apple-darwin/release/bundle
+          lipo -verify_arch arm64 x86_64 "$bundle/macos/Ilum.app/Contents/MacOS/ilum"
+          codesign --verify --deep --strict "$bundle/macos/Ilum.app"
+          xcrun stapler validate "$bundle/macos/Ilum.app"
+          dmg="$(find "$bundle/dmg" -maxdepth 1 -name '*.dmg' -print -quit)"
+          test -f "$dmg"
+          if ! xcrun stapler validate "$dmg"; then
+            xcrun notarytool submit "$dmg" --key "$APPLE_API_KEY_PATH" --key-id "$APPLE_API_KEY" \
+              --issuer "$APPLE_API_ISSUER" --wait
+            xcrun stapler staple "$dmg"
+          fi
+          xcrun stapler validate "$dmg"
+          mkdir -p "$RUNNER_TEMP/release"
+          cp "$dmg" "$RUNNER_TEMP/release/Ilum.dmg"
+          cp "$bundle/macos/Ilum.app.tar.gz" "$bundle/macos/Ilum.app.tar.gz.sig" "$RUNNER_TEMP/release/"
+      - name: Create the GitHub release draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from "node:fs";
+          const folder = process.env.RUNNER_TEMP + "/release/";
+          const tag = process.env.GITHUB_REF_NAME;
+          const url = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/releases/download/${tag}/Ilum.app.tar.gz`;
+          const signature = readFileSync(folder + "Ilum.app.tar.gz.sig", "utf8").trim();
+          if (!signature) throw new Error("Missing update signature");
+          const artifact = { url, signature };
+          writeFileSync(folder + "latest.json", JSON.stringify({
+            version: tag.slice(1),
+            pub_date: new Date().toISOString(),
+            platforms: { "darwin-aarch64": artifact, "darwin-x86_64": artifact }
+          }, null, 2));
+          JS
+          cd "$RUNNER_TEMP/release"
+          shasum -a 256 Ilum.dmg > Ilum.dmg.sha256
+          gh release create "$GITHUB_REF_NAME" Ilum.dmg Ilum.dmg.sha256 Ilum.app.tar.gz Ilum.app.tar.gz.sig latest.json \
+            --repo "$GITHUB_REPOSITORY" --draft --verify-tag --generate-notes --title "Ilum $GITHUB_REF_NAME"

@@ -1,0 +1,3 @@
+"NSDesktopFolderUsageDescription" = "Ilum misst den auf dem Schreibtisch belegten Speicher und zeigt große Dateien zur Prüfung an.";
+"NSDocumentsFolderUsageDescription" = "Ilum misst den in Dokumente belegten Speicher und zeigt große Dateien zur Prüfung an.";
+"NSDownloadsFolderUsageDescription" = "Ilum misst die Speicherbelegung deiner Downloads und zeigt große oder alte Downloads zur Prüfung an.";

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSDesktopFolderUsageDescription</key>
+  <string>Ilum misst den auf dem Schreibtisch belegten Speicher und zeigt große Dateien zur Prüfung an.</string>
+  <key>NSDocumentsFolderUsageDescription</key>
+  <string>Ilum misst den in Dokumente belegten Speicher und zeigt große Dateien zur Prüfung an.</string>
+  <key>NSDownloadsFolderUsageDescription</key>
+  <string>Ilum misst die Speicherbelegung deiner Downloads und zeigt große oder alte Downloads zur Prüfung an.</string>
+</dict>
+</plist>
